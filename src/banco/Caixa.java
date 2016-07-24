@@ -32,10 +32,9 @@ public class Caixa implements Runnable{
         while(true){
             try {
                 clientesSem.acquire();
-                mutexSem.acquire();
+                caixasSem.acquire();
                 //
                 caixasSem.release();
-                mutexSem.release();
                 //
             } catch (InterruptedException ex) {
                 Logger.getLogger(Caixa.class.getName()).log(Level.SEVERE, null, ex);

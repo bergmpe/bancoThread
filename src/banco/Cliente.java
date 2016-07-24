@@ -33,13 +33,10 @@ public class Cliente implements Runnable{
     public void run() {
         try {
             long tempoInicio = System.currentTimeMillis();
-            mutexSem.acquire();
+            caixasSem.acquire();
             clientesSem.release();
             //
-            while(System.currentTimeMillis() - tempoInicio == tempoAtendimento){}
-            mutexSem.release();
-            caixasSem.acquire();
-            
+            while(System.currentTimeMillis() - tempoInicio == tempoAtendimento){}            
             
         } catch (InterruptedException ex) {
             Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);

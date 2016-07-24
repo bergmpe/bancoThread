@@ -6,21 +6,25 @@
 package banco;
 
 import java.net.URL;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 /**
  *
  * @author padrao
  */
 public class FXMLDocumentController implements Initializable {
 
-    ConsoleWindow console = new ConsoleWindow();
+    ConsoleWindow console;
+    List<Cliente> clientes;
+    List<Caixa>   caixas;
     @FXML
     private Label label;
     
@@ -35,7 +39,10 @@ public class FXMLDocumentController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
-         console.showConsoleWindow();
+        console  = new ConsoleWindow();
+        clientes = new LinkedList<>();
+        caixas   = new LinkedList<>();
+        console.showConsoleWindow();
     }    
     
 }
