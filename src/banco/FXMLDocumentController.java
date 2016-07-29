@@ -30,8 +30,13 @@ public class FXMLDocumentController implements Initializable {
     
     @FXML
     private void handleButtonAction(ActionEvent event) {
-        System.out.println("You clicked me!");
-        label.setText("Hello World!");
+        
+        Cliente cliente = new Cliente(1, 10000, 1);
+        clientes.add(cliente);
+        Thread thread;
+        thread = new Thread(cliente);
+        thread.start();
+        //Caixa caixa1 = new Caixa(1, clientesSem, caixasSem, mutexSem)
         console.append("clicou vei");
         console.writeln();
     }
@@ -43,6 +48,7 @@ public class FXMLDocumentController implements Initializable {
         clientes = new LinkedList<>();
         caixas   = new LinkedList<>();
         console.showConsoleWindow();
+        label.setText("Hello World!");
     }    
     
 }

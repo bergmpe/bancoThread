@@ -21,22 +21,30 @@ public class Cliente implements Runnable{
     private Semaphore clientesSem;
     private Semaphore caixasSem;
     private Semaphore mutexSem;
+    private Semaphore localSem;
 
     public Cliente(int id, long tempoAtendimento, int senha) {
         this.id = id;
         this.tempoAtendimento = tempoAtendimento;
         this.senha = senha;
+        localSem = new Semaphore(0);
     }
-    
-    
+
+    public Semaphore getLocalSem() {
+        return localSem;
+    }
+   
     @Override
     public void run() {
         try {
-            long tempoInicio = System.currentTimeMillis();
+            localSem.acquire();
             caixasSem.acquire();
             clientesSem.release();
             //
-            while(System.currentTimeMillis() - tempoInicio == tempoAtendimento){}            
+            long tempoInicio = System.currentTimeMillis();
+            while(System.currentTimeMillis() - tempoInicio == tempoAtendimento){
+                System.out.println("atendendo");
+            }            
             
         } catch (InterruptedException ex) {
             Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);

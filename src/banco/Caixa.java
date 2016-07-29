@@ -5,6 +5,7 @@
  */
 package banco;
 
+import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,6 +20,7 @@ public class Caixa implements Runnable{
     private Semaphore clientesSem;
     private Semaphore caixasSem;
     private Semaphore mutexSem;
+    private List<Cliente> clientes;
 
     public Caixa(int id, Semaphore clientesSem, Semaphore caixasSem, Semaphore mutexSem) {
         this.id = id;
@@ -27,12 +29,16 @@ public class Caixa implements Runnable{
         this.mutexSem = mutexSem;
     }
 
+    public void setClientes(List clientes) {
+        this.clientes = clientes;
+    }
+
     @Override
     public void run() {
         while(true){
             try {
                 clientesSem.acquire();
-                caixasSem.acquire();
+                clientes.get(0).getLocalSem().release();//libera o primeiro cliente da fila.
                 //
                 caixasSem.release();
                 //
