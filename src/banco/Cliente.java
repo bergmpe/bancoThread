@@ -33,19 +33,25 @@ public class Cliente implements Runnable{
     public Semaphore getLocalSem() {
         return localSem;
     }
+    
+    public void setSemaphore(Semaphore clientesSem, Semaphore caixasSem, Semaphore mutexSem){
+        this.clientesSem = clientesSem;
+        this.caixasSem = caixasSem;
+        this.mutexSem = mutexSem;
+    }
    
     @Override
     public void run() {
         try {
-            localSem.acquire();
+            //localSem.acquire();
             caixasSem.acquire();
-            clientesSem.release();
+            
             //
             long tempoInicio = System.currentTimeMillis();
-            while(System.currentTimeMillis() - tempoInicio == tempoAtendimento){
-                System.out.println("atendendo");
+            while(System.currentTimeMillis() - tempoInicio < tempoAtendimento){
+                System.out.println("atendendo " + this.id);
             }            
-            
+            clientesSem.release();
         } catch (InterruptedException ex) {
             Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
         }

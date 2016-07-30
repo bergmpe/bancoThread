@@ -25,21 +25,33 @@ public class Caixa implements Runnable{
     public Caixa(int id, Semaphore clientesSem, Semaphore caixasSem, Semaphore mutexSem) {
         this.id = id;
         this.clientesSem = clientesSem;
-        this.caixasSem = caixasSem;
-        this.mutexSem = mutexSem;
+        this.caixasSem   = caixasSem;
+        this.mutexSem    = mutexSem;
     }
 
     public void setClientes(List clientes) {
         this.clientes = clientes;
     }
 
+    public void setSemaphore(Semaphore clientesSem, Semaphore caixasSem, Semaphore mutexSem){
+        this.clientesSem = clientesSem;
+        this.caixasSem = caixasSem;
+        this.mutexSem = mutexSem;
+    }
+    
     @Override
     public void run() {
         while(true){
             try {
+                System.out.println("caixa iniciou" + this.id);
                 clientesSem.acquire();
-                clientes.get(0).getLocalSem().release();//libera o primeiro cliente da fila.
-                //
+                
+                //clientes.get(0).getLocalSem().release();//libera o primeiro cliente da fila.
+                
+                long tempoInicio = System.currentTimeMillis();
+                while(System.currentTimeMillis() - tempoInicio < 1000){
+                    //System.out.println(".");
+                }
                 caixasSem.release();
                 //
             } catch (InterruptedException ex) {
