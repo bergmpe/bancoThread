@@ -5,6 +5,7 @@
  */
 package banco;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Iterator;
@@ -17,26 +18,59 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 /**
  *
  * @author padrao
  */
 public class FXMLDocumentController implements Initializable {
-
-    ConsoleWindow console;
-    private List<Cliente> clientes;
-    private List<Caixa>   caixas;
-    private Semaphore clienteSem;
-    private Semaphore caixaSem;
-    private Semaphore mutex;
-    
     
     @FXML
     private Label label;
+    @FXML
+    private Button btnOk;
+    @FXML
+    private TextField numCaixasTextField;
     
     @FXML
+    private void btnOkClick(ActionEvent event){
+        Parent root;
+        Stage newStage;
+        Scene scene;
+        try {
+            //
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("FXMLMain.fxml"));
+            root = (Parent)fxmlLoader.load();
+            FXMLMainController mainController = fxmlLoader.getController();
+            mainController.setNumCaixas( numCaixasTextField.getText() );
+            mainController.criarCaixas ( numCaixasTextField.getText() );
+            
+            scene = new Scene(root);
+            newStage = new Stage();
+            newStage.setScene(scene);
+            
+            
+            newStage.show();
+            
+            //close this window
+            Stage stage = (Stage) btnOk.getScene().getWindow();
+            stage.close();
+        } catch (IOException ex) {
+            Logger.getLogger(FXMLDocumentController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Throwable ex) {
+            Logger.getLogger(FXMLDocumentController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
+    
+    /*@FXML
     private void handleButtonAction(ActionEvent event) {
         
         Cliente cliente = new Cliente(1, 1000, 1);
@@ -79,31 +113,14 @@ public class FXMLDocumentController implements Initializable {
         thread3 = new Thread(cliente3);
         thread3.start();
         //Caixa caixa1 = new Caixa(1, clientesSem, caixasSem, mutexSem)
-        console.append("clicou vei\n");
+        FXMLMainController.console.append("clicou vei\n");
         //console.writeln();
     }
+    */
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
-        //Popup pop = new Popup();
-        
-        console  = new ConsoleWindow();
-        clientes = new LinkedList<>();
-        caixas   = new LinkedList<>();
-        clienteSem = new Semaphore(0, true);
-        caixaSem = new Semaphore(1, true);
-        mutex    = new Semaphore(1);
-        Caixa caixa1 = new Caixa(1, clienteSem, caixaSem, mutex);
-        Caixa caixa2 = new Caixa(2, clienteSem, caixaSem, mutex);
-        caixa1.setSemaphore(clienteSem, caixaSem, mutex);
-        caixa2.setSemaphore(clienteSem, caixaSem, mutex);
-        Thread t1 = new Thread(caixa1);
-        t1.start();
-        //Thread t2 = new Thread(caixa2);
-        //t2.start();
-        console.showConsoleWindow();
-        label.setText("Hello World!");
+        // TODO        
     }    
     
 }

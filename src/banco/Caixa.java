@@ -41,16 +41,19 @@ public class Caixa implements Runnable{
     
     @Override
     public void run() {
+        System.out.println("caixa criado" + this.id);
         while(true){
             try {
-                System.out.println("caixa iniciou" + this.id);
                 clientesSem.acquire();
-                
-                //clientes.get(0).getLocalSem().release();//libera o primeiro cliente da fila.
-                
+                System.out.println("caixa" + this.id + " iniciou atendimento");
+                mutexSem.acquire();
+                //libera o primeiro cliente da fila.
+                Cliente cliente = clientes.get(0);
+                clientes.remove(0);
+                mutexSem.release();
                 long tempoInicio = System.currentTimeMillis();
-                while(System.currentTimeMillis() - tempoInicio < 1000){
-                    //System.out.println(".");
+                while(System.currentTimeMillis() - tempoInicio < cliente.getTempoAtendimento()){
+                    System.out.println("Caixa " + this.id + "atendendo " + cliente.getId());
                 }
                 caixasSem.release();
                 //
