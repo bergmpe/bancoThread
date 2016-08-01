@@ -15,10 +15,12 @@ import java.util.ResourceBundle;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.animation.Animation;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -28,9 +30,11 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 /**
  * FXML Controller class
  *
@@ -110,12 +114,44 @@ public class FXMLMainController implements Initializable {
     }
     
     public void criarCaixas(String numCaixas){
+    /*    Image IMAGE = new Image(this.getClass().getResource("slinkEdit3.png").toString());
+
+     int COLUMNS  =   3;
+     int COUNT    =  3;
+     int OFFSET_X =  0;
+     int OFFSET_Y =  0;
+     int WIDTH    = 60;
+     int HEIGHT   = 70;
+     final ImageView imageView = new ImageView(IMAGE);
+     
+     
+        imageView.setViewport(new Rectangle2D(OFFSET_X, OFFSET_Y, WIDTH, HEIGHT));
+
+        final Animation animation = new SpriteAnimation(
+                imageView,
+                Duration.millis(1000),
+                COUNT, COLUMNS,
+                OFFSET_X, OFFSET_Y,
+                WIDTH, HEIGHT
+        );
+        //animation.setCycleCount(Animation.INDEFINITE);
+        //animation.play();
+        //animation.stop();
+        animation.jumpTo(Duration.millis(3000));
+        animation.play();
+        rootPane.getChildren().add(imageView);
+        
+        /*animation.stop();
+        animation.setCycleCount(Animation.INDEFINITE);
+        animation.play();*/
+        
         System.out.println("criando caixas");
         int numeroCaixas = Integer.parseInt(numCaixas);
         caixaSem = new Semaphore(numeroCaixas, true);
         System.out.println("numero do semaphoro " + numeroCaixas);
         for (int i = 0; i < numeroCaixas; i++) {
-            Caixa caixa = new Caixa(caixaId++, clienteSem, caixaSem, mutex);
+             
+            Caixa caixa = new Caixa(caixaId++, clienteSem, caixaSem, mutex, rootPane);
             caixa.setClientes(clientes);
             caixas.add(caixa);
             Thread t = new Thread(caixa);
@@ -125,20 +161,6 @@ public class FXMLMainController implements Initializable {
     
     @FXML
     private void criarClienteBtnClick(ActionEvent event){
-        
-        /*FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("FXMLCriarCliente.fxml"));
-        try {
-            Parent root = (Parent)fxmlLoader.load();
-            Scene scene = new Scene(root);
-            Stage newStage = new Stage();
-            newStage.setScene(scene);
-            newStage.initModality(Modality.APPLICATION_MODAL);
-            //newStage.initOwner(newStage);
-            newStage.centerOnScreen();
-            newStage.showAndWait();
-        } catch (IOException ex) {
-            Logger.getLogger(FXMLMainController.class.getName()).log(Level.SEVERE, null, ex);
-        }*/
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle("Banco MMC");
         dialog.setHeaderText("Criar Cliente");
@@ -152,14 +174,49 @@ public class FXMLMainController implements Initializable {
 
         // The Java 8 way to get the response value (with lambda expression).
         result.ifPresent(tempoAtendimento -> { int tempo = Integer.parseInt(tempoAtendimento)*1000;
-        Cliente cliente = new Cliente(clienteId++, tempo, 1, rootPane);
+        Cliente cliente = new Cliente(clienteId++, tempo, 1, clientes.size(),rootPane);
         cliente.setSemaphore(clienteSem, caixaSem, mutex);
         clientes.add(cliente);
         Thread thread = new Thread(cliente);
-        thread.start();} );
+        thread.start();
+        } );
         
         
     }
+    
+    /*public void acorda(){
+    animation.stop();
+        animation.setCycleCount(Animation.INDEFINITE);
+        animation.play();
+    }*/
+    
+    /*public void criarCaixarEdorme(){
+    Image IMAGE = new Image(this.getClass().getResource("slinkEdit3.png").toString());
+
+     int COLUMNS  =   3;
+     int COUNT    =  3;
+     int OFFSET_X =  0;
+     int OFFSET_Y =  0;
+     int WIDTH    = 60;
+     int HEIGHT   = 70;
+     final ImageView imageView = new ImageView(IMAGE);
+     
+     
+        imageView.setViewport(new Rectangle2D(OFFSET_X, OFFSET_Y, WIDTH, HEIGHT));
+
+        final Animation animation = new SpriteAnimation(
+                imageView,
+                Duration.millis(1000),
+                COUNT, COLUMNS,
+                OFFSET_X, OFFSET_Y,
+                WIDTH, HEIGHT
+        );
+        //animation.setCycleCount(Animation.INDEFINITE);
+        //animation.play();
+        //animation.stop();
+        animation.jumpTo(Duration.millis(3000));
+        animation.play();
+    }*/
     
     /*private void criarCliente(String tempo){
         int tempoAtendimento = Integer.parseInt(tempo)*1000;
