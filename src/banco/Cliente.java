@@ -93,6 +93,10 @@ public class Cliente implements Runnable{
     public long getTempoAtendimento() {
         return tempoAtendimento;
     }
+
+    public VBox getVbox() {
+        return vbox;
+    }
     
     public void setSemaphore(Semaphore clientesSem, Semaphore caixasSem, Semaphore mutexSem){
         this.clientesSem = clientesSem;
@@ -202,15 +206,11 @@ public class Cliente implements Runnable{
             }
             
             
-            
-            
-            
-            
-            
-            while ( !chegouNaFila ) {
-                System.out.println("");
-            }
-            System.out.println("iniciou cliente");
+            //isso bloqueia o cliente na fila
+            //while ( !chegouNaFila ) {
+                //System.out.println("");
+            //}
+            //System.out.println("iniciou cliente");
             
             caixasSem.acquire();
             clientesSem.release();//original

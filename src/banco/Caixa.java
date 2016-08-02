@@ -121,7 +121,24 @@ public class Caixa implements Runnable{
                 Cliente cliente = clientes.get(0);
                 clientes.remove(0);
                 mutexSem.release();
-                cliente.vaParaoCaixa(this);
+                //move o cliente para o caixa
+                //cliente.vaParaoCaixa(this);
+                long inicio = System.currentTimeMillis();
+                while( cliente.getVbox().getLayoutX() >  vbox.getLayoutX() ){
+                    long ini = System.currentTimeMillis();
+                    if (ini - inicio > 20){
+                        cliente.getVbox().setLayoutX( cliente.getVbox().getLayoutX() -2);
+                        inicio = ini;
+                    } 			
+                }
+                while( cliente.getVbox().getLayoutY() >  vbox.getLayoutY() + 100 ){
+                    long ini = System.currentTimeMillis();
+                    if (ini - inicio > 20){
+                        cliente.getVbox().setLayoutY( cliente.getVbox().getLayoutY() -2);
+                        inicio = ini;
+                    } 
+                }
+                
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
