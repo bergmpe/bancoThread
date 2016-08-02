@@ -37,6 +37,7 @@ public class Caixa implements Runnable{
     private final Label label;
     private final Label lbStatus;
     private final ImageView imgView;
+    private Image[] images;
     private Animation animation;
 
     public Caixa(int id, Semaphore clientesSem, Semaphore caixasSem, Semaphore mutexSem, AnchorPane rootPane) {
@@ -55,8 +56,10 @@ public class Caixa implements Runnable{
 
         
         imgView = new ImageView();
-        Image img = new Image(this.getClass().getResource("slinkEdit3.png").toString());
-        imgView.setImage(img);
+        images = new Image[]{ new Image(this.getClass().getResource("caixa0.png").toString()),
+                new Image(this.getClass().getResource("caixa1.png").toString()),
+                    new Image(this.getClass().getResource("caixa2.png").toString())};
+        imgView.setImage(images[2]);
         final int COLUMNS  =   3;
         final int COUNT    =  3;
         final int OFFSET_X =  0;
@@ -73,7 +76,7 @@ public class Caixa implements Runnable{
                 OFFSET_X, OFFSET_Y,
                 WIDTH, HEIGHT
         );
-        this.durma();
+        //this.durma();
         vbox.getChildren().add(label);
         vbox.getChildren().add(lbStatus);
         vbox.getChildren().add(imgView);
@@ -94,7 +97,7 @@ public class Caixa implements Runnable{
         this.mutexSem = mutexSem;
     }
     
-    public void durma(){
+    /*public void durma(){
         animation.stop();
         animation.setCycleCount(1);
         animation.jumpTo(Duration.millis(3000));
@@ -105,7 +108,12 @@ public class Caixa implements Runnable{
         animation.stop();
         animation.setCycleCount(Animation.INDEFINITE);
         animation.play();
+    }*/
+    
+    public void durma(){
+        imgView.setImage(images[2]);
     }
+    
 
     @Override
     public void run() {
@@ -114,7 +122,7 @@ public class Caixa implements Runnable{
             try {
                 clientesSem.acquire();
                 System.out.println("caixa" + this.id + " iniciou atendimento");
-                this.acorde();
+                //this.acorde();original
                 
                 mutexSem.acquire();
                 //libera o primeiro cliente da fila.
@@ -123,24 +131,31 @@ public class Caixa implements Runnable{
                 mutexSem.release();
                 //move o cliente para o caixa
                 //cliente.vaParaoCaixa(this);
+                int i = 0;
                 long inicio = System.currentTimeMillis();
                 while( cliente.getVbox().getLayoutX() >  vbox.getLayoutX() ){
                     long ini = System.currentTimeMillis();
-                    if (ini - inicio > 20){
+                    if (ini - inicio > 40){
                         cliente.getVbox().setLayoutX( cliente.getVbox().getLayoutX() -2);
+                        cliente.getImgView().setImage(cliente.getImagensLeft()[i++]);
+                        if( 2 < i)
+                            i = 0;
                         inicio = ini;
                     } 			
                 }
                 inicio = System.currentTimeMillis();
                 while( cliente.getVbox().getLayoutY() >  vbox.getLayoutY() + 100 ){
                     long ini = System.currentTimeMillis();
-                    if (ini - inicio > 20){
+                    if (ini - inicio > 80){
                         cliente.getVbox().setLayoutY( cliente.getVbox().getLayoutY() -2);
+                        cliente.getImgView().setImage(cliente.getImagensLeft()[i++]);
+                        if( 2 < i )
+                            i = 0;
                         inicio = ini;
                     } 
                 }
                 
-                
+                //atendendo o cliente.
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
@@ -148,8 +163,16 @@ public class Caixa implements Runnable{
                     }
                 });
                 long tempoInicio = System.currentTimeMillis();
-                while(System.currentTimeMillis() - tempoInicio < cliente.getTempoAtendimento()){
-                    //System.out.println("Caixa " + this.id + "atendendo " + cliente.getId());
+                inicio = System.currentTimeMillis();
+                i = 0;
+                while(System.currentTimeMillis() - tempoInicio < cliente.getTempoAtendimento()){                    
+                    long ini = System.currentTimeMillis();
+                    if(ini - inicio > 250){
+                        imgView.setImage(images[i++]);
+                        if( i > 2 )
+                            i = 0;
+                        inicio = ini;
+                    }
                 }
                 
                 Platform.runLater(new Runnable() {
@@ -166,16 +189,22 @@ public class Caixa implements Runnable{
                 inicio = System.currentTimeMillis();
                 while( cliente.getVbox().getLayoutY() <  200 ){
                     long ini = System.currentTimeMillis();
-                    if (ini - inicio > 20){
+                    if (ini - inicio > 40){
                         cliente.getVbox().setLayoutY( cliente.getVbox().getLayoutY() +2);
+                        cliente.getImgView().setImage(cliente.getImagensLeft()[i++]);
+                        if( 2 < i )
+                            i = 0;
                         inicio = ini;
                     } 
                 }
                 inicio = System.currentTimeMillis();
                 while( cliente.getVbox().getLayoutX() >  -50 ){
                     long ini = System.currentTimeMillis();
-                    if (ini - inicio > 20){
+                    if (ini - inicio > 40){
                         cliente.getVbox().setLayoutX( cliente.getVbox().getLayoutX() -2);
+                        cliente.getImgView().setImage(cliente.getImagensLeft()[i++]);
+                        if( 2 < i )
+                            i = 0;
                         inicio = ini;
                     } 			
                 }

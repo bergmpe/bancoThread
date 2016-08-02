@@ -43,6 +43,8 @@ public class Cliente implements Runnable{
     private final VBox vbox;
     private final Label label;
     private final ImageView imgView;
+    private Image[] imagensLeft;
+    private Image[] imagensUp;
     
     private Boolean chegouNaFila;
     private Boolean chegouNoCaixa;
@@ -61,7 +63,10 @@ public class Cliente implements Runnable{
         label = new Label(""+id);
         label.textAlignmentProperty().set(TextAlignment.CENTER);
         
-        imgView = new ImageView(new Image(this.getClass().getResource("black.png").toString()));
+        imgView = new ImageView();
+        imagensLeft = new Image[]{new Image(this.getClass().getResource("marioleft0.png").toString()),
+            new Image(this.getClass().getResource("marioleft1.png").toString()),
+                new Image(this.getClass().getResource("marioleft2.png").toString())};
         vbox.getChildren().add(label);
         vbox.getChildren().add(imgView);
         this.rootPane = rootPane;
@@ -71,7 +76,7 @@ public class Cliente implements Runnable{
         
         chegouNaFila = false;
         chegouNoCaixa = false;    
-        localSem = new Semaphore(0);
+        localSem = new Semaphore(1);
     }
 
     public int getId() {
@@ -84,6 +89,18 @@ public class Cliente implements Runnable{
 
     public VBox getVbox() {
         return vbox;
+    }
+
+    public ImageView getImgView() {
+        return imgView;
+    }
+
+    public Image[] getImagensLeft() {
+        return imagensLeft;
+    }
+
+    public Image[] getImagensUp() {
+        return imagensUp;
     }
     
     public void setSemaphore(Semaphore clientesSem, Semaphore caixasSem, Semaphore mutexSem){
@@ -120,10 +137,16 @@ public class Cliente implements Runnable{
         try {
             //move o cliente para a fila          
             long inicio = System.currentTimeMillis();
+            int i = 0;
             while( vbox.getLayoutX() >  (xInicioFila + tamanhoFila*60) ){
                 long ini = System.currentTimeMillis();
-                if (ini - inicio > 20){
+                if (ini - inicio > 40){
                     vbox.setLayoutX( vbox.getLayoutX() -2);
+                    localSem.acquire();
+                    imgView.setImage(imagensLeft[i++]);
+                    localSem.release();
+                    if( 2 < i)
+                        i = 0;
                     inicio = ini;
                 } 			
             }
@@ -139,13 +162,13 @@ public class Cliente implements Runnable{
             clientesSem.release();//original
             //localSem.acquire();
             
-            System.out.println("atendendo " + this.id);
-            //
+            
+            //Em atendimento
             long tempoInicio = System.currentTimeMillis();
             while(System.currentTimeMillis() - tempoInicio < tempoAtendimento){
                 
             }            
-            System.out.println("terminou cliente");
+            FXMLMainController.console.append("terminou de atender cliente " + id + "\n");
         } catch (InterruptedException ex) {
             Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
         }
