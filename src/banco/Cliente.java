@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Label;
@@ -38,13 +39,15 @@ public class Cliente implements Runnable{
     private Semaphore mutexSem;
     private Semaphore localSem;
     
-    private AnchorPane rootPane;
-    private VBox vbox;
-    private Label label;
-    private ImageView imgView;
+    private final AnchorPane rootPane;
+    private final VBox vbox;
+    private final Label label;
+    private final ImageView imgView;
     
     private Boolean chegouNaFila;
     private Boolean chegouNoCaixa;
+    private final int xInicioFila = 300;
+    private int tamanhoFila;
     
 
     public Cliente(int id, long tempoAtendimento, int senha, int tamanhoFila,AnchorPane rootPane) {
@@ -76,9 +79,10 @@ public class Cliente implements Runnable{
         rootPane.getChildren().add(vbox);
         //rootPane.getChildren().add(rectBasicTimeline);
         //timeline.play();
+        this.tamanhoFila = tamanhoFila;
+        
         chegouNaFila = false;
-        chegouNoCaixa = false;
-        this.irParaFila(tamanhoFila);
+        chegouNoCaixa = false;    
         localSem = new Semaphore(0);
     }
 
@@ -96,7 +100,7 @@ public class Cliente implements Runnable{
         this.mutexSem = mutexSem;
     }
     
-    public void irParaFila(int tamanhoFila){
+    /*public void irParaFila(int tamanhoFila){
         final Timeline timeline = new Timeline();
         //timeline.setCycleCount(Timeline.INDEFINITE);
         //timeline.setAutoReverse(true);
@@ -117,6 +121,31 @@ public class Cliente implements Runnable{
                 //localSem.release();
             }
         });
+    }*/
+    
+    public void irParaFila(int tamanhoFila) throws InterruptedException{
+        /*double dist = (-rootPane.widthProperty().doubleValue()/2) + (tamanhoFila*60);
+        for(int i = 0; i < dist; i++){
+            long inicio = System.currentTimeMillis();
+            while( (System.currentTimeMillis() - inicio) < 5){
+                System.out.println("banco.Cliente.irParaFila()");}
+            vbox.translateXProperty().set( vbox.translateXProperty().getValue() + 1);
+        }*/
+        
+        //vbox.translateXProperty().set( vbox.translateXProperty().getValue() + 300);
+        //for(int i = 0; i < 100; i++){
+        
+        //long inicio = System.currentTimeMillis();
+            //while( (System.currentTimeMillis() - inicio) < 50){
+               // System.out.println("banco.Cliente.irParaFila()");
+            //}
+        //vbox.setLayoutX(i);
+        //}
+        
+        //chegouNaFila = true;
+        
+        
+        System.out.print("foi para fila");
     }
    
     public void vaParaoCaixa(Caixa caixa){
@@ -162,6 +191,21 @@ public class Cliente implements Runnable{
     @Override
     public void run() {
         try {
+            //move o cliente para a fila          
+            long inicio = System.currentTimeMillis();
+            while( vbox.getLayoutX() >  (xInicioFila + tamanhoFila*60) ){
+                long ini = System.currentTimeMillis();
+                if (ini - inicio > 20){
+                    vbox.setLayoutX( vbox.getLayoutX() -2);
+                    inicio = ini;
+                } 			
+            }
+            
+            
+            
+            
+            
+            
             
             while ( !chegouNaFila ) {
                 System.out.println("");
