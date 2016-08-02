@@ -131,6 +131,7 @@ public class Caixa implements Runnable{
                         inicio = ini;
                     } 			
                 }
+                inicio = System.currentTimeMillis();
                 while( cliente.getVbox().getLayoutY() >  vbox.getLayoutY() + 100 ){
                     long ini = System.currentTimeMillis();
                     if (ini - inicio > 20){
@@ -139,26 +140,46 @@ public class Caixa implements Runnable{
                     } 
                 }
                 
+                
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
                         lbStatus.setText("At o cli " + cliente.getId());
                     }
                 });
-                
                 long tempoInicio = System.currentTimeMillis();
                 while(System.currentTimeMillis() - tempoInicio < cliente.getTempoAtendimento()){
                     //System.out.println("Caixa " + this.id + "atendendo " + cliente.getId());
                 }
-    
+                
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
                         lbStatus.setText("Dormindo");
                     }
                 });
+                
+                
                 this.durma();
-                cliente.vaEmbora();
+                //cliente va embora
+                //cliente.vaEmbora();
+                inicio = System.currentTimeMillis();
+                while( cliente.getVbox().getLayoutY() <  200 ){
+                    long ini = System.currentTimeMillis();
+                    if (ini - inicio > 20){
+                        cliente.getVbox().setLayoutY( cliente.getVbox().getLayoutY() +2);
+                        inicio = ini;
+                    } 
+                }
+                inicio = System.currentTimeMillis();
+                while( cliente.getVbox().getLayoutX() >  -50 ){
+                    long ini = System.currentTimeMillis();
+                    if (ini - inicio > 20){
+                        cliente.getVbox().setLayoutX( cliente.getVbox().getLayoutX() -2);
+                        inicio = ini;
+                    } 			
+                }
+                
                 caixasSem.release();
             } catch (InterruptedException ex) {
                 Logger.getLogger(Caixa.class.getName()).log(Level.SEVERE, null, ex);

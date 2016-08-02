@@ -57,28 +57,16 @@ public class Cliente implements Runnable{
         vbox = new VBox();
         vbox.setLayoutX(650);
         vbox.setLayoutY(200);
-        label = new Label(""+id);
         
+        label = new Label(""+id);
         label.textAlignmentProperty().set(TextAlignment.CENTER);
+        
         imgView = new ImageView(new Image(this.getClass().getResource("black.png").toString()));
         vbox.getChildren().add(label);
         vbox.getChildren().add(imgView);
-        
-        //final Rectangle rectBasicTimeline = new Rectangle(100, 50, 100, 50);
-        //rectBasicTimeline.setFill(Color.RED);
-
-        /*final Timeline timeline = new Timeline();
-        timeline.setCycleCount(Timeline.INDEFINITE);
-        timeline.setAutoReverse(true);
-        //final KeyValue kv = new KeyValue(rectBasicTimeline.xProperty(), 300);
-        final KeyValue kv = new KeyValue(vbox.translateXProperty(), -300);
-        final KeyFrame kf = new KeyFrame(Duration.millis(500), kv);
-        timeline.getKeyFrames().add(kf);
-        timeline.play();*/
         this.rootPane = rootPane;
         rootPane.getChildren().add(vbox);
-        //rootPane.getChildren().add(rectBasicTimeline);
-        //timeline.play();
+        
         this.tamanhoFila = tamanhoFila;
         
         chegouNaFila = false;
@@ -126,71 +114,6 @@ public class Cliente implements Runnable{
             }
         });
     }*/
-    
-    public void irParaFila(int tamanhoFila) throws InterruptedException{
-        /*double dist = (-rootPane.widthProperty().doubleValue()/2) + (tamanhoFila*60);
-        for(int i = 0; i < dist; i++){
-            long inicio = System.currentTimeMillis();
-            while( (System.currentTimeMillis() - inicio) < 5){
-                System.out.println("banco.Cliente.irParaFila()");}
-            vbox.translateXProperty().set( vbox.translateXProperty().getValue() + 1);
-        }*/
-        
-        //vbox.translateXProperty().set( vbox.translateXProperty().getValue() + 300);
-        //for(int i = 0; i < 100; i++){
-        
-        //long inicio = System.currentTimeMillis();
-            //while( (System.currentTimeMillis() - inicio) < 50){
-               // System.out.println("banco.Cliente.irParaFila()");
-            //}
-        //vbox.setLayoutX(i);
-        //}
-        
-        //chegouNaFila = true;
-        
-        
-        System.out.print("foi para fila");
-    }
-   
-    public void vaParaoCaixa(Caixa caixa){
-        final Timeline timeline = new Timeline();
-        System.out.println("cVbox " + caixa.getVbox().layoutXProperty().getValue());
-        final KeyValue kvx = new KeyValue(vbox.translateXProperty(),
-                -rootPane.widthProperty().doubleValue()-vbox.widthProperty().getValue()+
-                    caixa.getVbox().layoutXProperty().getValue());
-        final KeyValue kvy = new KeyValue(vbox.translateYProperty(),
-                -rootPane.heightProperty().doubleValue()+vbox.heightProperty().getValue()+
-                    caixa.getVbox().layoutYProperty().getValue()+200);
-        final KeyFrame kfx = new KeyFrame(Duration.millis(1000), kvx);
-        final KeyFrame kfy = new KeyFrame(Duration.millis(1000), kvy);
-        timeline.getKeyFrames().add(kfx);
-        timeline.getKeyFrames().add(kfy);
-        timeline.play();
-        timeline.setOnFinished(new javafx.event.EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                chegouNoCaixa = true;  
-                //localSem.release();
-            }
-        });
-    }
-    
-    public void vaEmbora(){
-        final Timeline timeline = new Timeline();
-        final KeyValue kvx = new KeyValue(vbox.layoutXProperty(), -10);
-        final KeyValue kvy = new KeyValue(vbox.layoutYProperty(), 320);
-        final KeyFrame kfx = new KeyFrame(Duration.millis(1500), kvx);
-        final KeyFrame kfy = new KeyFrame(Duration.millis(500), kvy);
-        timeline.getKeyFrames().add(kfy);
-        timeline.play();
-        timeline.setOnFinished(new javafx.event.EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                timeline.getKeyFrames().add(kfx);
-                timeline.play();
-            }
-        });
-    }
     
     @Override
     public void run() {
