@@ -15,6 +15,7 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.event.ActionEvent;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -60,10 +61,13 @@ public class Cliente implements Runnable{
         vbox.setLayoutX(650);
         vbox.setLayoutY(200);
         
+        
         label = new Label(""+id);
         label.textAlignmentProperty().set(TextAlignment.CENTER);
         
         imgView = new ImageView();
+        imgView.setScaleX(1.5);
+        imgView.setScaleY(1.5);
         imagensLeft = new Image[]{new Image(this.getClass().getResource("marioleft0.png").toString()),
             new Image(this.getClass().getResource("marioleft1.png").toString()),
                 new Image(this.getClass().getResource("marioleft2.png").toString())};
@@ -141,8 +145,8 @@ public class Cliente implements Runnable{
             while( vbox.getLayoutX() >  (xInicioFila + tamanhoFila*60) ){
                 long ini = System.currentTimeMillis();
                 if (ini - inicio > 40){
-                    vbox.setLayoutX( vbox.getLayoutX() -2);
                     localSem.acquire();
+                    vbox.setLayoutX( vbox.getLayoutX() -2);
                     imgView.setImage(imagensLeft[i++]);
                     localSem.release();
                     if( 2 < i)

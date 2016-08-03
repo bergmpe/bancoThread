@@ -69,13 +69,13 @@ public class Caixa implements Runnable{
      
         imgView.setViewport(new Rectangle2D(OFFSET_X, OFFSET_Y, WIDTH, HEIGHT));
 
-        animation = new SpriteAnimation(
+        /*animation = new SpriteAnimation(
                 imgView,
                 Duration.millis(1000),
                 COUNT, COLUMNS,
                 OFFSET_X, OFFSET_Y,
                 WIDTH, HEIGHT
-        );
+        );*/
         //this.durma();
         vbox.getChildren().add(label);
         vbox.getChildren().add(lbStatus);
