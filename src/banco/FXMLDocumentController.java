@@ -49,13 +49,12 @@ public class FXMLDocumentController implements Initializable {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("FXMLMain.fxml"));
             root = (Parent)fxmlLoader.load();
             FXMLMainController mainController = fxmlLoader.getController();
-            mainController.setNumCaixas( numCaixasTextField.getText() );
             mainController.criarCaixas ( numCaixasTextField.getText() );
             
             scene = new Scene(root);
             newStage = new Stage();
             newStage.setScene(scene);
-            
+            newStage.setTitle("Banco MMC");
             
             newStage.show();
             
@@ -69,54 +68,6 @@ public class FXMLDocumentController implements Initializable {
         }
         
     }
-    
-    /*@FXML
-    private void handleButtonAction(ActionEvent event) {
-        
-        Cliente cliente = new Cliente(1, 1000, 1);
-        cliente.setSemaphore(clienteSem, caixaSem, mutex);
-        clientes.add(cliente);
-        Thread thread;
-        thread = new Thread(cliente);
-        thread.start();
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(FXMLDocumentController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        Cliente cliente1 = new Cliente(2, 1000, 1);
-        cliente1.setSemaphore(clienteSem, caixaSem, mutex);
-        clientes.add(cliente1);
-        Thread thread1;
-        thread1 = new Thread(cliente1);
-        thread1.start();
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(FXMLDocumentController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        Cliente cliente2 = new Cliente(3, 1000, 1);
-        cliente2.setSemaphore(clienteSem, caixaSem, mutex);
-        clientes.add(cliente2);
-        Thread thread2;
-        thread2 = new Thread(cliente2);
-        thread2.start();
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(FXMLDocumentController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        Cliente cliente3 = new Cliente(4, 1000, 1);
-        cliente3.setSemaphore(clienteSem, caixaSem, mutex);
-        clientes.add(cliente3);
-        Thread thread3;
-        thread3 = new Thread(cliente3);
-        thread3.start();
-        //Caixa caixa1 = new Caixa(1, clientesSem, caixasSem, mutexSem)
-        FXMLMainController.console.append("clicou vei\n");
-        //console.writeln();
-    }
-    */
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {

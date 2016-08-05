@@ -77,7 +77,7 @@ public class ConsoleWindow {
 		txtArea.append(text);
 	}
 	
-	public void writeError(String text){
+	/*public void writeError(String text){
 		writeln(text);
 		writeln("Aplica\u00E7\u00E3o ser\u00e1 encerrada em 5 segundos...");
 		Thread shutdownThread = new Thread(new Runnable() {			
@@ -93,5 +93,5 @@ public class ConsoleWindow {
 			}
 		});
 		shutdownThread.start();
-	}
+	}*/
 }

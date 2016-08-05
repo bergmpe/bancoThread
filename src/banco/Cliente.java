@@ -5,26 +5,18 @@
  */
 package banco;
 
-import java.beans.EventHandler;
+import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
-import javafx.event.ActionEvent;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.TextAlignment;
-import javafx.util.Duration;
 
 /**
  *
@@ -43,46 +35,68 @@ public class Cliente implements Runnable{
     private final AnchorPane rootPane;
     private final VBox vbox;
     private final Label label;
+    private final Label lbStatus;
     private final ImageView imgView;
     private Image[] imagensLeft;
     private Image[] imagensUp;
+    private Image[] imagensDown;
     
     private Boolean chegouNaFila;
     private Boolean chegouNoCaixa;
-    private final int xInicioFila = 300;
-    private int tamanhoFila;
+    private List<Cliente> clientes;
+    private int xInicioFila;
     
 
-    public Cliente(int id, long tempoAtendimento, int senha, int tamanhoFila,AnchorPane rootPane) {
+    public Cliente(int id, long tempoAtendimento, int senha, List<Cliente> clientes,AnchorPane rootPane) {
         this.id = id;
         this.tempoAtendimento = tempoAtendimento;
         this.senha = senha;
         vbox = new VBox();
-        vbox.setLayoutX(650);
+        vbox.setLayoutX(800);
         vbox.setLayoutY(200);
         
-        
-        label = new Label(""+id);
+        label = new Label("" + id + " T: " + this.tempoAtendimento/1000);
         label.textAlignmentProperty().set(TextAlignment.CENTER);
+        label.setTextFill(Color.web("#FFFFFF"));
+        lbStatus = new Label("Status");
+        lbStatus.setTextFill(Color.web("#FFFFFF"));
         
         imgView = new ImageView();
-        imgView.setScaleX(1.5);
-        imgView.setScaleY(1.5);
-        imagensLeft = new Image[]{new Image(this.getClass().getResource("marioleft0.png").toString()),
-            new Image(this.getClass().getResource("marioleft1.png").toString()),
-                new Image(this.getClass().getResource("marioleft2.png").toString())};
+        imgView.setScaleX(0.8);
+        imgView.setScaleY(0.8);
+        imagensLeft = new Image[]{new Image(this.getClass().getResource("mariolleft0.png").toString()),
+            new Image(this.getClass().getResource("mariolleft1.png").toString()),
+                new Image(this.getClass().getResource("mariolleft2.png").toString())};
+        imagensUp = new Image[]{new Image(this.getClass().getResource("marioUp0.png").toString()),
+            new Image(this.getClass().getResource("marioUp1.png").toString()),
+                new Image(this.getClass().getResource("marioUp2.png").toString())};
+        imagensDown = new Image[]{new Image(this.getClass().getResource("mariodown0.png").toString()),
+            new Image(this.getClass().getResource("mariodown1.png").toString()),
+                new Image(this.getClass().getResource("mariodown2.png").toString())};
         vbox.getChildren().add(label);
+        vbox.getChildren().add(lbStatus);
         vbox.getChildren().add(imgView);
         this.rootPane = rootPane;
-        rootPane.getChildren().add(vbox);
+//        this.rootPane.getChildren().add(vbox);
         
-        this.tamanhoFila = tamanhoFila;
+        this.clientes = clientes;
         
         chegouNaFila = false;
         chegouNoCaixa = false;    
-        localSem = new Semaphore(1);
+        localSem = new Semaphore(0);
     }
-
+    
+    public void adicionarVbox(){
+        try {
+            mutexSem.acquire();
+            this.rootPane.getChildren().add(vbox);
+            mutexSem.release();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
+    
     public int getId() {
         return id;
     }
@@ -106,6 +120,18 @@ public class Cliente implements Runnable{
     public Image[] getImagensUp() {
         return imagensUp;
     }
+
+    public Semaphore getLocalSem() {
+        return localSem;
+    }
+
+    public Label getLbStatus() {
+        return lbStatus;
+    }
+
+    public void setxInicioFila(int xInicioFila) {
+        this.xInicioFila = xInicioFila;
+    }
     
     public void setSemaphore(Semaphore clientesSem, Semaphore caixasSem, Semaphore mutexSem){
         this.clientesSem = clientesSem;
@@ -113,49 +139,113 @@ public class Cliente implements Runnable{
         this.mutexSem = mutexSem;
     }
     
-    /*public void irParaFila(int tamanhoFila){
-        final Timeline timeline = new Timeline();
-        //timeline.setCycleCount(Timeline.INDEFINITE);
-        //timeline.setAutoReverse(true);
-        //final KeyValue kv = new KeyValue(rectBasicTimeline.xProperty(), 300);
-        System.out.println("tamanhofila " + tamanhoFila);
-        double dist = (-rootPane.widthProperty().doubleValue()/2) + (tamanhoFila*60);
-        System.out.println("valor: " + dist);
-        final KeyValue kv = new KeyValue(vbox.translateXProperty(), dist);
-        final KeyFrame kf = new KeyFrame(Duration.millis(500), kv);
-        timeline.getKeyFrames().add(kf);
-        timeline.play();
-        
-        timeline.setOnFinished(new javafx.event.EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                System.out.println("terminou xegou na fila");
-                chegouNaFila = true;
-                //localSem.release();
+    private void vaParaFila(){
+        long inicio = System.currentTimeMillis();
+            int i = 0;
+            while( vbox.getLayoutX() >  (xInicioFila + clientes.size()*60) ){
+                long ini = System.currentTimeMillis();
+                if (ini - inicio > 280){
+                    try {
+                        mutexSem.acquire();
+                        vbox.setLayoutX( vbox.getLayoutX() -8);
+                        imgView.setImage(imagensLeft[i++]);
+                        mutexSem.release();
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    if( 2 < i )
+                        i = 0;
+                    inicio = ini;
+                } 			
             }
-        });
-    }*/
+    }
+    
+    private void vaEmbora(){
+        int i=0;
+        long inicio = System.currentTimeMillis();
+        while( vbox.getLayoutY() <  200 ){
+            long ini = System.currentTimeMillis();
+            if (ini - inicio > 280){
+                try {
+                    mutexSem.acquire();
+                    vbox.setLayoutY( vbox.getLayoutY() +8 );
+                    imgView.setImage( imagensDown[i++] );
+                    mutexSem.release();
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                if( 2 < i )
+                    i = 0;
+                inicio = ini;
+                } 
+                }
+                inicio = System.currentTimeMillis();
+                while( vbox.getLayoutX() >  -50 ){
+                    long ini = System.currentTimeMillis();
+                    if (ini - inicio > 280){
+                        try {
+                            mutexSem.acquire();
+                            vbox.setLayoutX( vbox.getLayoutX() -8);
+                            imgView.setImage( imagensLeft[i++]);
+                            mutexSem.release();
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        if( 2 < i )
+                            i = 0;
+                        inicio = ini;
+                    } 			
+                }
+            
+    }
+    
+    public void avance(){
+        int i = 0;
+        long ini;
+        double posInicial = vbox.getLayoutX();
+        long inicio = System.currentTimeMillis();
+        System.out.println("" + clientes.indexOf(this));
+        while( vbox.getLayoutX() > (xInicioFila + clientes.indexOf(this)*60) ){
+            ini = System.currentTimeMillis();
+            if (ini - inicio > 140){
+                vbox.setLayoutX( vbox.getLayoutX() -4);
+                imgView.setImage(imagensLeft[i++]);
+                if( 2 < i )
+                    i = 0;
+                inicio = ini;
+            } 			
+        }
+    }
     
     @Override
     public void run() {
         try {
             //move o cliente para a fila          
-            long inicio = System.currentTimeMillis();
+            /*long inicio = System.currentTimeMillis();
             int i = 0;
             while( vbox.getLayoutX() >  (xInicioFila + tamanhoFila*60) ){
                 long ini = System.currentTimeMillis();
                 if (ini - inicio > 40){
-                    localSem.acquire();
+                    //localSem.acquire();
+                    mutexSem.acquire();
                     vbox.setLayoutX( vbox.getLayoutX() -2);
                     imgView.setImage(imagensLeft[i++]);
-                    localSem.release();
+                    mutexSem.release();
+                    //localSem.release();
                     if( 2 < i)
                         i = 0;
                     inicio = ini;
                 } 			
-            }
+            }*/
             
-            
+            vaParaFila();
+            Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        lbStatus.setText("Dormindo");
+                    }
+             });
+
             //isso bloqueia o cliente na fila
             //while ( !chegouNaFila ) {
                 //System.out.println("");
@@ -164,15 +254,51 @@ public class Cliente implements Runnable{
             
             caixasSem.acquire();
             clientesSem.release();//original
-            //localSem.acquire();
+            localSem.acquire();
             
             
             //Em atendimento
             long tempoInicio = System.currentTimeMillis();
             while(System.currentTimeMillis() - tempoInicio < tempoAtendimento){
-                
-            }            
-            FXMLMainController.console.append("terminou de atender cliente " + id + "\n");
+                System.out.println("");
+            }
+            
+            /*int i=0;
+            long inicio = System.currentTimeMillis();
+                while( vbox.getLayoutY() <  200 ){
+                    long ini = System.currentTimeMillis();
+                    if (ini - inicio > 40){
+                        mutexSem.acquire();
+                        vbox.setLayoutY( vbox.getLayoutY() +2);
+                        imgView.setImage( imagensLeft[i++]);
+                        mutexSem.release();
+                        if( 2 < i )
+                            i = 0;
+                        inicio = ini;
+                    } 
+                }
+                inicio = System.currentTimeMillis();
+                while( vbox.getLayoutX() >  -50 ){
+                    long ini = System.currentTimeMillis();
+                    if (ini - inicio > 40){
+                        mutexSem.acquire();
+                        vbox.setLayoutX( vbox.getLayoutX() -2);
+                        imgView.setImage( imagensLeft[i++]);
+                        mutexSem.release();
+                        if( 2 < i )
+                            i = 0;
+                        inicio = ini;
+                    } 			
+                }*/
+            
+             Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        lbStatus.setText("Ja foi Ate");
+                    }
+             });
+            vaEmbora();
+            FXMLMainController.console.append("cliente " + id + " foi embora\n");
         } catch (InterruptedException ex) {
             Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
         }

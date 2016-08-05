@@ -7,14 +7,16 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" fx:id="rootPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="banco.FXMLMainController">
+<AnchorPane id="AnchorPane" fx:id="rootPane" prefHeight="400.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="banco.FXMLMainController">
    <children>
-      <Label fx:id="label" layoutX="285.0" layoutY="301.0" text="Label" />
-      <ImageView fx:id="imgView" fitHeight="292.0" fitWidth="600.0" layoutX="-1.0" pickOnBounds="true">
+      <Label fx:id="label" layoutX="373.0" layoutY="336.0" text="Tempo de Atendimento" />
+      <ImageView fx:id="imgView" fitHeight="292.0" fitWidth="800.0" layoutX="-1.0" pickOnBounds="true">
          <image>
             <Image url="@background2.jpg" />
          </image></ImageView>
       <Button layoutX="503.0" layoutY="361.0" mnemonicParsing="false" onAction="#criarClienteBtnClick" text="Criar Cliente" />
       <ImageView fitHeight="100.0" fitWidth="100.0" layoutX="52.0" layoutY="30.0" pickOnBounds="true" preserveRatio="true" />
+      <TextField fx:id="tempoAtendimentoTxtField" layoutX="503.0" layoutY="332.0" prefHeight="25.0" prefWidth="81.0" />
+      <Label layoutX="584.0" layoutY="336.0" text="segundos" />
    </children>
 </AnchorPane>
