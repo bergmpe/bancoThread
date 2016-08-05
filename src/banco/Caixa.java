@@ -101,11 +101,10 @@ public class Caixa implements Runnable{
 
     @Override
     public void run() {
-        System.out.println("caixa criado" + this.id);
+        FXMLMainController.console.append("caixa criado" + this.id + "\n");
         while(true){
             try {
-                clientesSem.acquire();
-                System.out.println("caixa" + this.id + " iniciou atendimento");
+                clientesSem.acquire(); 
                 
                 mutexSem.acquire();
                 //libera o primeiro cliente da fila.
@@ -126,10 +125,10 @@ public class Caixa implements Runnable{
                 while( cliente.getVbox().getLayoutX() >  vbox.getLayoutX() ){
                     long ini = System.currentTimeMillis();
                     if (ini - inicio > 140){
-                        mutexSem.acquire();
+                       // mutexSem.acquire();
                         cliente.getVbox().setLayoutX( cliente.getVbox().getLayoutX() -4);
                         cliente.getImgView().setImage(cliente.getImagensLeft()[i++]);
-                        mutexSem.release();
+                       // mutexSem.release();
                         if( 2 < i)
                             i = 0;
                         inicio = ini;

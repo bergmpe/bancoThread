@@ -40,6 +40,7 @@ public class Cliente implements Runnable{
     private Image[] imagensLeft;
     private Image[] imagensUp;
     private Image[] imagensDown;
+    private Image[] imgPiscando;
     
     private Boolean chegouNaFila;
     private Boolean chegouNoCaixa;
@@ -73,6 +74,8 @@ public class Cliente implements Runnable{
         imagensDown = new Image[]{new Image(this.getClass().getResource("mariodown0.png").toString()),
             new Image(this.getClass().getResource("mariodown1.png").toString()),
                 new Image(this.getClass().getResource("mariodown2.png").toString())};
+        imgPiscando = new Image[]{new Image(this.getClass().getResource("mariolleft0.png").toString()),
+        new Image(this.getClass().getResource("marioUp0.png").toString()),new Image(this.getClass().getResource("mariodown0.png").toString()) };
         vbox.getChildren().add(label);
         vbox.getChildren().add(lbStatus);
         vbox.getChildren().add(imgView);
@@ -177,8 +180,8 @@ public class Cliente implements Runnable{
                 if( 2 < i )
                     i = 0;
                 inicio = ini;
-                } 
-                }
+            } 
+        }
                 inicio = System.currentTimeMillis();
                 while( vbox.getLayoutX() >  -50 ){
                     long ini = System.currentTimeMillis();
@@ -220,23 +223,7 @@ public class Cliente implements Runnable{
     @Override
     public void run() {
         try {
-            //move o cliente para a fila          
-            /*long inicio = System.currentTimeMillis();
-            int i = 0;
-            while( vbox.getLayoutX() >  (xInicioFila + tamanhoFila*60) ){
-                long ini = System.currentTimeMillis();
-                if (ini - inicio > 40){
-                    //localSem.acquire();
-                    mutexSem.acquire();
-                    vbox.setLayoutX( vbox.getLayoutX() -2);
-                    imgView.setImage(imagensLeft[i++]);
-                    mutexSem.release();
-                    //localSem.release();
-                    if( 2 < i)
-                        i = 0;
-                    inicio = ini;
-                } 			
-            }*/
+            //move o cliente para a fila
             
             vaParaFila();
             Platform.runLater(new Runnable() {
@@ -245,13 +232,6 @@ public class Cliente implements Runnable{
                         lbStatus.setText("Dormindo");
                     }
              });
-
-            //isso bloqueia o cliente na fila
-            //while ( !chegouNaFila ) {
-                //System.out.println("");
-            //}
-            //System.out.println("iniciou cliente");
-            
             caixasSem.acquire();
             clientesSem.release();//original
             localSem.acquire();
@@ -259,37 +239,20 @@ public class Cliente implements Runnable{
             
             //Em atendimento
             long tempoInicio = System.currentTimeMillis();
-            while(System.currentTimeMillis() - tempoInicio < tempoAtendimento){
-                System.out.println("");
-            }
-            
-            /*int i=0;
             long inicio = System.currentTimeMillis();
-                while( vbox.getLayoutY() <  200 ){
-                    long ini = System.currentTimeMillis();
-                    if (ini - inicio > 40){
-                        mutexSem.acquire();
-                        vbox.setLayoutY( vbox.getLayoutY() +2);
-                        imgView.setImage( imagensLeft[i++]);
-                        mutexSem.release();
-                        if( 2 < i )
-                            i = 0;
-                        inicio = ini;
-                    } 
+            int i = 0;
+            while( System.currentTimeMillis() - tempoInicio < tempoAtendimento ){
+                
+                long ini = System.currentTimeMillis();
+                if (ini - inicio > 280){
+                    mutexSem.acquire();
+                    imgView.setImage(imgPiscando[i++]);
+                    mutexSem.release();
+                    if( 2 < i)
+                        i = 0;
+                    inicio = ini;
                 }
-                inicio = System.currentTimeMillis();
-                while( vbox.getLayoutX() >  -50 ){
-                    long ini = System.currentTimeMillis();
-                    if (ini - inicio > 40){
-                        mutexSem.acquire();
-                        vbox.setLayoutX( vbox.getLayoutX() -2);
-                        imgView.setImage( imagensLeft[i++]);
-                        mutexSem.release();
-                        if( 2 < i )
-                            i = 0;
-                        inicio = ini;
-                    } 			
-                }*/
+            }
             
              Platform.runLater(new Runnable() {
                     @Override
